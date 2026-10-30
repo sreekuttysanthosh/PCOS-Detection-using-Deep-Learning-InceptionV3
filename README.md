@@ -5,25 +5,33 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Kaggle](https://img.shields.io/badge/Dataset-Kaggle-blue.svg)](https://www.kaggle.com/datasets/anaghachoudhari/pcos-detection-using-ultrasound-images)
 
+An automated medical image classification project that explores the detection of Polycystic Ovary Syndrome (PCOS) from ovarian ultrasound images using **InceptionV3-based transfer learning**.
 This repository contains a complete reproduction of the paper **"Transfer-Based Deep Learning Technique for PCOS Detection using Ultrasound Images"** (presented at NMITCON 2023). The project leverages a fine-tuned **InceptionV3** model, pre-trained on ImageNet, to achieve state-of-the-art performance in classifying Polycystic Ovary Syndrome (PCOS) from ultrasound scans.
+This project was developed as part of the Deep Learning Capstone Project (Academic Year 2025–26).
+A major focus of this work is investigating dataset leakage in medical image classification and developing an improved evaluation pipeline to obtain more reliable estimates of model generalization
+
+## 📋 Table of Contents
 
 ## 📋 Table of Contents
 
 - [Project Overview](#-project-overview)
+- [Problem Statement](#-problem-statement)
+- [Project Objectives](#-project-objectives)
 - [Key Features](#-key-features)
 - [Dataset](#-dataset)
 - [Methodology](#-methodology)
-  - [1. Preprocessing Pipeline](#1-preprocessing-pipeline)
-  - [2. Augmentation Strategy](#2-augmentation-strategy)
-  - [3. Model Architecture](#3-model-architecture)
-  - [4. Training Configuration](#4-training-configuration)
-- [Results](#-results)
-- [Installation & Setup](#-installation--setup)
+- [Model Architecture](#-model-architecture)
+- [Implementation Approaches](#-implementation-approaches)
+- [Data Leakage Investigation](#️-data-leakage-investigation)
+- [Evaluation Strategy](#-evaluation-strategy)
+- [Results and Observations](#-results-and-observations)
+- [Technologies Used](#️-technologies-used)
+- [Installation and Setup](#-installation-and-setup)
 - [Usage](#-usage)
 - [Project Structure](#-project-structure)
+- [Limitations](#️-limitations)
 - [Future Improvements](#-future-improvements)
-- [Citation](#-citation)
-- [License](#-license)
+- [Research Reference](#-research-reference)
 - [Acknowledgements](#-acknowledgements)
 
 ---
@@ -32,93 +40,157 @@ This repository contains a complete reproduction of the paper **"Transfer-Based 
 
 ## 🎯 Project Overview
 
-Polycystic Ovary Syndrome (PCOS) is a common hormonal disorder affecting women of reproductive age. Early detection is crucial for effective management. This project uses deep transfer learning to automatically detect PCOS from ultrasound images, providing a non-invasive, efficient, and accurate diagnostic tool.
+Polycystic Ovary Syndrome (PCOS) is a common endocrine disorder affecting women of reproductive age. Ultrasound imaging is one of the clinical methods used to assess ovarian morphology during PCOS evaluation.
 
-The model achieves **99.48% accuracy** on the test set, demonstrating the effectiveness of transfer learning in medical image analysis.
+This project explores the application of deep learning and transfer learning to classify ovarian ultrasound images into two categories:
+
+* **PCOS**: Ultrasound images associated with PCOS.
+
+* **Non-PCOS**: Ultrasound images not associated with PCOS.
+
+The implementation uses **InceptionV3**, a convolutional neural network pretrained on ImageNet, as the feature extraction backbone.
+
+The project follows two implementation stages:
+
+1. Reproduction of the original research methodology.
+
+2. An improved evaluation pipeline developed after identifying potential data leakage in the original dataset split.
+
+The second implementation emphasizes proper dataset separation, external validation and more realistic model evaluation.
+
+**Important**: This is an academic research prototype and is not intended to replace clinical diagnosis or medical assessment.
 
 ---
 
-## 🎯 Problem
+## 🎯 Problem Statement
+Deep learning has considerable potential in medical image analysis. However, the reliability of medical AI models depends not only on model architecture but also on dataset quality and evaluation methodology.
 
-PCOS diagnosis using ultrasound is:
-- Time-consuming  
-- Depends on expert interpretation  
-- Prone to errors  
+An improperly separated dataset can introduce data leakage, resulting in artificially inflated performance metrics.
 
-This project builds an **automated detection system**.
+This project investigates both the classification task and the importance of reliable evaluation in healthcare AI applications.
+
 
 ---
+---
 
+## 🎯  Project Objectives
+* Develop a deep learning pipeline for PCOS classification using ovarian ultrasound images.
+
+* Reproduce the methodology of an existing research paper using InceptionV3 transfer learning.
+
+* Perform image preprocessing, normalization and data augmentation.
+
+* Investigate potential data leakage between the original training and test datasets.
+
+* Develop a revised validation strategy to reduce evaluation bias.
+
+* Introduce external validation to examine model generalization.
+
+* Evaluate classification performance using standard machine learning metrics.
+
+* Understand the limitations of deep learning-based medical image classification.
+
+---
 ---
 
 ## ✨ Key Features
 
-- **Complete Pipeline**: End-to-end implementation from data loading to model evaluation
-- **Robust Preprocessing**: Automatic detection and removal of corrupt images, grayscale conversion, and standardized resizing
-- **Advanced Two-Stage Augmentation**:
-  - Offline: +3 augmented images per input
-  - Online: Real-time augmentation during training
-- **State-of-the-Art Architecture**: InceptionV3 pre-trained on ImageNet
-- **Two-Phase Training Strategy**:
-  - Phase 1: Base model frozen, custom head trained
-  - Phase 2: Top layers unfrozen for end-to-end fine-tuning
-- **Comprehensive Evaluation**: Accuracy, precision, recall, F1-score, and confusion matrix
-
----
+- **Transfer Learning**: Uses pretrained InceptionV3 for image feature extraction.
+- **Image Preprocessing**: Includes grayscale conversion, resizing and normalization.
+- **Data Augmentation**: Applies image transformations to improve training diversity.
+- **Binary Classification**: Distinguishes between PCOS and non-PCOS ultrasound images.
+- **Two Implementation Pipelines**:Preserves the original reproduction and improved evaluation approaches.
+- **Data Leakage Investigation**: Introduces external validation data to assess generalization.
+- **Performance Evaluation**:Includes accuracy, precision, recall, F1-score and confusion matrix analysis.
 
 
 ## 📁 Dataset
 
-The project uses the `pcos-detection-using-ultrasound-images` dataset from Kaggle, created by Anagha Choudhari.
+The project uses the publicly available Kaggle dataset:
 
-### Dataset Statistics
+**PCOS Detection Using Ultrasound Images**
 
-| Split          | Infected | Not Infected | Total   |
+* Dataset creator: Anagha Choudhari
+
+* Platform: Kaggle
+
+* Task: Binary medical image classification
+
+**Dataset link:**
+
+[https://www.kaggle.com/datasets/anaghachoudhari/pcos-detection-using-ultrasound-images](https://www.kaggle.com/datasets/anaghachoudhari/pcos-detection-using-ultrasound-images)
+
+### Original Dataset Statistics
+The original dataset contains the following reported image counts:
+| Dataset Split          | PCOS(Infected) |Non-PCOS( Not Infected) | Total   |
 |----------------|----------|--------------|---------|
 | **Training**   | 781      | 1,143        | 1,924   |
 | **Test**       | 787      | 1,145        | 1,932   |
 | **Total**      | 1,568    | 2,288        | 3,856   |
 
-> **Note**: The dataset includes a data cleaning step that automatically identifies and removes corrupt images from the dataset.
+>These statistics describe the original dataset organization and should not be interpreted as independent evaluation sample counts.
+>
+### Dataset considerations:
+
+During dataset investigation, overlapping or highly similar images were identified between the original training and test folders.
+This observation raised concerns about the independence of the original evaluation data and motivated the development of the improved validation pipeline.
+
 
 ---
 
 ## 🔬 Methodology
+The project follows an image classification workflow consisting of preprocessing, augmentation, feature extraction, model training and evaluation.
+### 1. Image Preprocessing
+The ultrasound images undergo the following preprocessing operations:
+- Image loading and dataset verification
+- Identification and removal of corrupted images.
+- Conversion of images into grayscale using OpenCV.
+- Resizing images to 224 × 224 pixels.
+- Conversion of grayscale images into three-channel representations for compatibility with InceptionV3.
+- Pixel normalization before model training.
 
-### 1. Preprocessing Pipeline
-
-- Convert images to grayscale using OpenCV (`COLOR_BGR2GRAY`)
-- Resize all images to 224×224 pixels
-- Stack grayscale to 3 channels for InceptionV3 compatibility
-
-### 2. Augmentation Strategy
-
-#### Offline Augmentation (+3 images per input)
-
+### 2. Data Augmentation
+Image augmentation is used to introduce additional variations into the training data.
+The original implementation explores:
 | Augmentation | Description |
 |--------------|-------------|
-| Transform 1 | Horizontal flip + 10° rotation |
-| Transform 2 | Contrast enhancement (1.5x boost) -10° rotation |
-| Transform 3 | Sharpening + shift transformation |
+| Horizontal Flip| Horizontally flips the ultrasound image|
+|Rotation | Applies small angular rotations |
+|Contrast Enhancement | Adjusts image contrast |
+| Sharpening| Enhances image details|
+| Width/Height Shift| Applies positional transformations|
+| Zoom| Changes image magnification|
 
-#### Online Augmentation (during training)
+Both offline and online augmentation strategies are explored in the original implementation.
 
-| Augmentation | Range |
-|--------------|-------|
-| Random rotation | ±20° |
-| Width/height shift | ±10% |
-| Zoom | ±15% |
-| Shear | ±10% |
-| Horizontal flip | Yes |
- 
+Augmentation is intended to improve training diversity and reduce overfitting. It does not replace proper dataset separation.
 
-### 3. Model Architecture
+#### 3. Feature Extraction
+The project uses InceptionV3 pretrained on ImageNet.
 
-- InceptionV3 (pretrained on ImageNet)
-- GlobalAveragePooling2D
-- Dense(256, activation='relu')
-- Dropout(0.5)
-- Dense(1, activation='sigmoid')
+The pretrained convolutional layers extract hierarchical image features, which are subsequently used for binary classification.
+#### 4. Classification
+The extracted features are passed through a custom classification head to predict the probability of an ultrasound image belonging to the PCOS category.
+
+
+
+
+### 🧠 Model Architecture
+Base architecture: InceptionV3 (ImageNet pretrained)
+
+The classification architecture consists of:
+
+InceptionV3 convolutional backbone.
+
+Global Average Pooling layer.
+
+Fully connected Dense layer with 256 neurons and ReLU activation.
+
+Dropout layer with a dropout rate of 0.5.
+
+Output Dense layer with one neuron and sigmoid activation.
+
+The output represents the predicted probability for binary classification.
 
 **Model Parameters:**
 
